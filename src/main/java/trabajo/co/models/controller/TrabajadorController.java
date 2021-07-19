@@ -4,6 +4,7 @@ package trabajo.co.models.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import trabajo.co.models.entity.Trabajador;
 import trabajo.co.models.services.TrabajadorService;
-
+@CrossOrigin(origins="http://localhost:4200") 
 @RestController
 @RequestMapping("/trabajadores")
 public class TrabajadorController {
@@ -50,16 +51,18 @@ public class TrabajadorController {
 		if(trabajadors == null) {
 			return ResponseEntity.notFound().build();
 		}
-		Trabajador trabajadorbd = trabajadors;
-		trabajadorbd.setNombre(trabajador.getNombre());
-		
-		return ResponseEntity.status(HttpStatus.CREATED).body(trabajadorbd);
+
+		trabajadors.setNombre(trabajador.getNombre());
+		service.save(trabajadors);
+		return ResponseEntity.status(HttpStatus.CREATED).body(trabajadors);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> eliminar(@PathVariable Long id){
+		System.out.println("que esta llegandole -->"+id);
+		Trabajador trabajador = service.findById(id);
 		service.deleteById(id);
-		return ResponseEntity.notFound().build();
+		return ResponseEntity.status(HttpStatus.ACCEPTED).body(trabajador);
 	}
 	
 
